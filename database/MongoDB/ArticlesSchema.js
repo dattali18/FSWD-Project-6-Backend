@@ -34,6 +34,10 @@ const articleSchema = new mongoose.Schema({
     },
     tags: {
         type: [String]
+    },
+    articleId: {
+        type: Number,
+        required: true
     }
 });
 

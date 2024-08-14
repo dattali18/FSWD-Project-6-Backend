@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const isWriter = require('../middleware/writerMiddleware');
+
 const Article = require('../models/Articles');
 
 /**
@@ -10,11 +12,19 @@ const Article = require('../models/Articles');
  * @access Public
  */
 router.get('/:id', async (req, res) => {
+    let id = req.params.id;
+    // can't access this path why??
+    id = parseInt(id);
+    if(isNaN(id)) {
+        return res.status(400).json({message: "Invalid id"});
+    }
+
     try {
-        const article = await Article.findById(req.params.id);
-        res.json(article);
+        const article = await Article.getArticlesById(id);
+        return res.status(200).json({article: article});
     } catch (error) {
-        res.json({message: error});
+        console.log(error);
+        return res.status(400).json({message: "Article not found"});
     }
 });
 
@@ -26,28 +36,66 @@ router.get('/:id', async (req, res) => {
  * @param {number} page - page number
  */
 router.get('/', async (req, res) => {
-        // if no limit or page is provided return all articles
-        const limit = req.query.limit;
-        const page = req.query.page;
+    // if no limit or page is provided return all articles
+    let limit = req.query.limit;
+    let page = req.query.page;
 
-        if(!limit || !page) {
-            try {
-                const articles = await Article.find();
-                res.json(articles);
-            } catch (error) {
-                res.json({message: error});
-            }
-        }
 
+    if (!limit || !page) {
         try {
-            const articles = await Article.find()
-                .limit(limit)
-                .skip(limit * (page - 1));
-            res.json(articles);
+            const articles = await Article.getArticles();
+            return res.status(200).json({articles: articles});
         } catch (error) {
-            res.json({message: error});
+            console.log(error);
+            return res.status(400).json({message: error});
         }
     }
-);
+
+    try {
+        // try and parse the limit and page
+        limit = parseInt(limit);
+        page = parseInt(page);
+    } catch (e) {
+        return res.status(400).json({message: "Invalid limit or page"});
+    }
+
+    try {
+        let articles = await Article.getArticles();
+        // apply pagination
+        articles = articles.slice((page - 1) * limit, page * limit);
+        // add field for current page and total pages
+        let body = {
+            articles: articles, page: page, totalPages: Math.ceil(articles.length / limit)
+        }
+
+        return res.status(200).json(body);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({message: error});
+    }
+});
+
+
+/**
+ * @desc create an article
+ * @path POST /articles
+ * @access Public
+ * @param {string} title - article title
+ * @param {string} content - article body
+ * @param {number} author - article author (user id)
+ * @param {[string]} tags - article tags
+ */
+router.post('/', isWriter, async (req, res) => {
+    const article = {
+        title: req.body.title, content: req.body.content, author: req.user.id, tags: req.body.tags
+    };
+
+    try {
+        const savedArticle = await Article.createArticle(article);
+        return res.status(201).json({article: savedArticle});
+    } catch (error) {
+        return res.status(400).json({message: error});
+    }
+});
 
 module.exports = router;

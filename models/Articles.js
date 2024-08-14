@@ -12,27 +12,25 @@ const {connection} = require("mongoose");
 
 /**
  * @desc Article - class that will represent the article object
- * @property id : number
  * @property title : string
  * @property author : number
- * @property articleId : number
+ * @property tags : [string]
  * @property content : string
+ * @property articleId : number
  */
 class Article {
     /**
      * @desc constructor for the article
-     * @param id : number
      * @param title : string
      * @param author : number
-     * @param article_id : number
+     * @param tags : [string]
      * @param content : string
      */
-    constructor(id, title, author, article_id, content) {
-        this.id = id;
+    constructor(title, author, tags, content) {
         this.title = title;
         this.author = author;
-        this.article_id = article_id;
         this.content = content;
+        this.tags = tags;
     }
 }
 
@@ -46,7 +44,7 @@ async function createArticle(article) {
     // and store the _id of the article in the MySQL db in the article in the MongoDB db
 
     // create the article in the MySQL db
-    const [result] = await mysqlDB.execute('INSERT INTO Articles (title, author) VALUES (?, ?)', [article.title, article.author]);
+    const [result] = await mysqlDB.execute('INSERT INTO Articles (title, user_id) VALUES (?, ?)', [article.title, article.author]);
     // add the id of the article in the MySQL db to the article in the MongoDB db
     article.articleId = result.insertId;
 
@@ -65,9 +63,9 @@ async function deleteArticle(articleId) {
     // and delete the article in the MongoDB db
 
     // get the article from the MongoDB db
-    const article = await Articles.findById(articleId);
+    const article = await Articles.findOne({articleId: articleId});
     // delete the article from the MySQL db
-    await mysqlDB.execute('DELETE FROM Articles WHERE id = ?', [article.articleId]);
+    await mysqlDB.execute('DELETE FROM Articles WHERE id = ?', [articleId]);
     // delete the article from the MongoDB db
     return Articles.deleteOne({_id: articleId});
 }
@@ -83,9 +81,9 @@ async function updateArticle(articleId, article) {
     // and update the article in the MongoDB db
 
     // get the article from the MongoDB db
-    const oldArticle = await Articles.findById(articleId);
+    const oldArticle = await Articles.findOne({articleId: articleId});
     // update the article in the MySQL db
-    await mysqlDB.execute('UPDATE Articles SET title = ? WHERE id = ?', [article.title, oldArticle.articleId]);
+    await mysqlDB.execute('UPDATE Articles SET title = ? WHERE id = ?', [article.title, articleId]);
     // update the article in the MongoDB db
     return Articles.updateOne({_id: articleId}, article);
 }
@@ -101,12 +99,12 @@ async function getArticles() {
 
 /**
  * @desc This function will get all the articles from the database
- * @param predicate : callback   (article) -> boolean
+ * @param {function(*) boolean} predicate     (article) -> boolean
  * @returns {Promise<*>}
  */
-async function getArticlesBy(predicate) {
+async function getArticlesById(articleId) {
     // get all the articles
-    return Articles.find(predicate);
+    return Articles.findOne({articleId: articleId});
 }
 
 
@@ -116,5 +114,5 @@ module.exports = {
     deleteArticle,
     updateArticle,
     getArticles,
-    getArticlesBy
+    getArticlesById
 }

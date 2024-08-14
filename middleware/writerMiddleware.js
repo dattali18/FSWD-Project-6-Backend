@@ -12,7 +12,7 @@ require('dotenv').config();
 /**
  * @desc This middleware checks if the user is an admin
  */
-const isWriter = (req, res, next) => {
+const isWriter = async (req, res, next) => {
     // get the token from the header
     const token = req.header('x-auth-token');
     // if the token is null
@@ -24,8 +24,9 @@ const isWriter = (req, res, next) => {
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET);
         // get the user with username from the db
-        const user = userModel.getUserByUsername(verified.username);
-        const isWriter = writerModel.isUserWriter(user.id);
+        const [user] = await userModel.getUserByUsername(verified.username);
+
+        const isWriter = await writerModel.isUserWriter(user.id);
         if (user.role !== 'writer' || !isWriter) {
             return res.status(403).json({message: 'Access denied'});
         }
