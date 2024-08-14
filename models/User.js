@@ -59,8 +59,24 @@ async function createUser(user) {
     }
 }
 
+/**
+ * @desc This function will delete a user from the database
+ * @param user_id
+ * @returns {Promise<*|*[]>}
+ */
+async function deleteUser(user_id) {
+    try {
+        const [rows] = await this.connection.query('DELETE FROM Users WHERE id = ?', [user_id]);
+        return rows;
+    } catch (error) {
+        console.error('Error in deleting user', error);
+        return [];
+    }
+}
+
 module.exports = {
     User,
     getAllUsers,
-    createUser
+    createUser,
+    deleteUser
 }
