@@ -24,14 +24,14 @@ class Article {
      * @param id : number
      * @param title : string
      * @param author : number
-     * @param articleId : number
+     * @param article_id : number
      * @param content : string
      */
-    constructor(id, title, author, articleId, content) {
+    constructor(id, title, author, article_id, content) {
         this.id = id;
         this.title = title;
         this.author = author;
-        this.articleId = articleId;
+        this.article_id = article_id;
         this.content = content;
     }
 }
