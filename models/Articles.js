@@ -8,6 +8,7 @@ const Articles = require('../database/MongoDB/ArticlesSchema');
 
 // import the connection to the database
 const mysqlDB = require('../database/MySQL/connection');
+const {connection} = require("mongoose");
 
 /**
  * @desc Article - class that will represent the article object
@@ -45,7 +46,7 @@ async function createArticle(article) {
     // and store the _id of the article in the MySQL db in the article in the MongoDB db
 
     // create the article in the MySQL db
-    const [result] = await mysqlDB.query('INSERT INTO Articles (title, author) VALUES (?, ?)', [article.title, article.author]);
+    const [result] = await mysqlDB.execute('INSERT INTO Articles (title, author) VALUES (?, ?)', [article.title, article.author]);
     // add the id of the article in the MySQL db to the article in the MongoDB db
     article.articleId = result.insertId;
 
@@ -66,7 +67,7 @@ async function deleteArticle(articleId) {
     // get the article from the MongoDB db
     const article = await Articles.findById(articleId);
     // delete the article from the MySQL db
-    await mysqlDB.query('DELETE FROM Articles WHERE id = ?', [article.articleId]);
+    await mysqlDB.execute('DELETE FROM Articles WHERE id = ?', [article.articleId]);
     // delete the article from the MongoDB db
     return Articles.deleteOne({_id: articleId});
 }
@@ -84,7 +85,7 @@ async function updateArticle(articleId, article) {
     // get the article from the MongoDB db
     const oldArticle = await Articles.findById(articleId);
     // update the article in the MySQL db
-    await mysqlDB.query('UPDATE Articles SET title = ? WHERE id = ?', [article.title, oldArticle.articleId]);
+    await mysqlDB.execute('UPDATE Articles SET title = ? WHERE id = ?', [article.title, oldArticle.articleId]);
     // update the article in the MongoDB db
     return Articles.updateOne({_id: articleId}, article);
 }

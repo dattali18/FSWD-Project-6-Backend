@@ -34,7 +34,7 @@ class User {
  */
 async function getAllUsers() {
     try {
-        const [rows] = await this.connection.query('SELECT * FROM Users');
+        const [rows] = await connection.execute('SELECT * FROM Users');
         return rows;
     } catch (error) {
         console.error('Error in getting all users', error);
@@ -51,7 +51,7 @@ async function createUser(user) {
     try {
         // before inserting the password we will encrypt it
         user.password = await bcrypt.hash(user.password, 10);
-        const [rows] = await this.connection.query('INSERT INTO Users (username, email, password) VALUES (?, ?, ?)', [user.username, user.email, user.password]);
+        const [rows] = await connection.execute('INSERT INTO Users (username, email, password) VALUES (?, ?, ?)', [user.username, user.email, user.password]);
         return rows;
     } catch (error) {
         console.error('Error in creating user', error);
@@ -66,7 +66,7 @@ async function createUser(user) {
  */
 async function deleteUser(user_id) {
     try {
-        const [rows] = await this.connection.query('DELETE FROM Users WHERE id = ?', [user_id]);
+        const [rows] = await connection.execute('DELETE FROM Users WHERE id = ?', [user_id]);
         return rows;
     } catch (error) {
         console.error('Error in deleting user', error);
