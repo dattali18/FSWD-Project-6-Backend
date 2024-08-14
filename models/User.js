@@ -100,11 +100,30 @@ async function getUserById(id) {
     }
 }
 
+/**
+ * @desc Update a user by id
+ * @param {number} id - the id of the user
+ * @param {Object} user - the user object
+ * @returns {Promise<*>}
+ *
+ * @Note we **can't** update the password here
+ */
+async function updateUser(id, user) {
+    try {
+        const [rows] = await connection.execute('UPDATE Users SET username = ?, email = ? WHERE id = ?', [user.username, user.email, id]);
+        return rows;
+    } catch (error) {
+        console.error('Error in updating user', error);
+        return [];
+    }
+}
+
 module.exports = {
     User,
     getAllUsers,
     getUserById,
     createUser,
     deleteUser,
-    getUserByUsername
+    getUserByUsername,
+    updateUser
 }
