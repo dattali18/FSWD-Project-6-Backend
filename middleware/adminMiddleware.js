@@ -11,7 +11,7 @@ require('dotenv').config();
 /**
  * @desc This middleware checks if the user is an admin
  */
-const isAdmin = (req, res, next) => {
+const isAdmin = async (req, res, next) => {
     // get the token from the header
     const token = req.header('x-auth-token');
     // if the token is null
@@ -22,13 +22,15 @@ const isAdmin = (req, res, next) => {
     // verify the token
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET);
+        // console.log('verified:', verified);
         // get the user with username from the db
-        const user = userModel.getUserByUsername(verified.username);
-        const isAdmin = adminModel.isUserAdmin(user.id);
+        const [user] = await userModel.getUserByUsername(verified.username);
+        // console.log('user:', user);
+        const isAdmin = await adminModel.isUserAdmin(user.id);
         if (user.role !== 'admin' || !isAdmin) {
             return res.status(403).json({message: 'Access denied'});
         }
-        req.user = verified;
+        req.user = user;
         next();
     } catch (err) {
         return res.status(400).json({message: 'Invalid token'});

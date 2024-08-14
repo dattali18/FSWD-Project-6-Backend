@@ -21,7 +21,6 @@ afterEach(async () => {
     // await mongoose.connection.close();
 });
 
-const axios = require('axios');
 
 describe('Testing the authentication routes', () => {
     test('POST /api/auth/login', async  () => {

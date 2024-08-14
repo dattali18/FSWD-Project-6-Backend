@@ -85,9 +85,25 @@ async function getUserByUsername(username) {
     }
 }
 
+/**
+ * @desc Get a user by id
+ * @param {number} id - the id of the user
+ * @returns {Promise<*>}
+ */
+async function getUserById(id) {
+    try {
+        const [rows] = await connection.execute('SELECT * FROM Users WHERE id = ?', [id]);
+        return rows;
+    } catch (error) {
+        console.error('Error in getting user by id', error);
+        return [];
+    }
+}
+
 module.exports = {
     User,
     getAllUsers,
+    getUserById,
     createUser,
     deleteUser,
     getUserByUsername

@@ -13,6 +13,8 @@ require('dotenv').config();
 const authMiddleware = (req, res, next) => {
     // get the token from the header
     const token = req.header('x-auth-token');
+
+    console.log('token:', token);
     if (!token) {
         return res.status(401).json({message: 'Access Denied'});
     }
