@@ -7,7 +7,6 @@ const bcrypt = require('bcrypt');
 
 /**
  * @desc User - class that will represent the user object
- * @property id : number
  * @property username : string
  * @property email : string
  * @property password : string
@@ -15,13 +14,11 @@ const bcrypt = require('bcrypt');
 class User {
     /**
      * @desc constructor for the user
-     * @param id : number
      * @param username : string
      * @param email : string
      * @param password : string
      */
-    constructor(id, username, email, password) {
-        this.id = id;
+    constructor(username, email, password) {
         this.username = username;
         this.email = email;
         this.password = password;

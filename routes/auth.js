@@ -9,6 +9,8 @@ require('dotenv').config();
 
 /**
  * @path POST /auth/login
+ * @body {string} username
+ * @body {string} password
  */
 router.post('/login', (req, res) => {
     // get the user from the userModel and check the user and password
@@ -36,6 +38,37 @@ router.post('/login', (req, res) => {
 
     // send the token to the user
     res.status(200).json({token: token, message: "Login successful"});
+});
+
+/**
+ * @path POST /auth/register
+ * @body {string} username
+ * @body {string} email
+ * @body {string} password
+ */
+router.post('/register', (req, res) => {
+    // get the user from the userModel and check the user and password
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
+
+    // if the username is null or password in null
+    if (!username || !email || !password) {
+        return res.status(400).json({message: 'All fields are required'});
+    }
+
+    // check if the user already exists
+    const user = userModel.getUserByUsername(username);
+    if (user) {
+        return res.status(409).json({message: 'User already exists'});
+    }
+
+    // create the user
+    const newUser = new userModel.User(username, email, password);
+    const response = userModel.createUser(newUser);
+
+    // send the response
+    res.status(201).json({message: 'User created successfully', data: response});
 });
 
 module.exports = router;
