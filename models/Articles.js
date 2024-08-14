@@ -10,8 +10,34 @@ const Articles = require('../database/MongoDB/ArticlesSchema');
 const mysqlDB = require('../database/MySQL/connection');
 
 /**
+ * @desc Article - class that will represent the article object
+ * @property id : number
+ * @property title : string
+ * @property author : number
+ * @property articleId : number
+ * @property content : string
+ */
+class Article {
+    /**
+     * @desc constructor for the article
+     * @param id : number
+     * @param title : string
+     * @param author : number
+     * @param articleId : number
+     * @param content : string
+     */
+    constructor(id, title, author, articleId, content) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.articleId = articleId;
+        this.content = content;
+    }
+}
+
+/**
  * @desc This function will create a new article in the database
- * @param article - the article to create
+ * @param article : Article - the article to create
  * @returns {Promise<*>}
  */
 async function createArticle(article) {
@@ -30,7 +56,7 @@ async function createArticle(article) {
 
 /**
  * @desc This function will get all the articles from the database
- * @param articleId - the id of the article to delete
+ * @param articleId : number - the id of the article to delete
  * @returns {Promise<*>}
  */
 async function deleteArticle(articleId) {
@@ -47,8 +73,8 @@ async function deleteArticle(articleId) {
 
 /**
  * @desc This function will update an article in the database
- * @param articleId - the id of the article to update
- * @param article - the new article data
+ * @param articleId : number - the id of the article to update
+ * @param article : Article - the new article data
  * @returns {Promise<*>}
  */
 async function updateArticle(articleId, article) {
@@ -74,7 +100,7 @@ async function getArticles() {
 
 /**
  * @desc This function will get all the articles from the database
- * @param predicate - (article) -> boolean
+ * @param predicate : callback   (article) -> boolean
  * @returns {Promise<*>}
  */
 async function getArticlesBy(predicate) {
@@ -84,6 +110,7 @@ async function getArticlesBy(predicate) {
 
 
 module.exports = {
+    Article,
     createArticle,
     deleteArticle,
     updateArticle,
