@@ -74,9 +74,24 @@ async function deleteUser(user_id) {
     }
 }
 
+/**
+ * @desc get a user by the username
+ * @param {string} username
+ */
+async function getUserByUsername(username) {
+    try {
+        const [rows] = await connection.execute('SELECT * FROM Users WHERE username = ?', [username]);
+        return rows;
+    } catch (error) {
+        console.error('Error in getting user by username', error);
+        return [];
+    }
+}
+
 module.exports = {
     User,
     getAllUsers,
     createUser,
-    deleteUser
+    deleteUser,
+    getUserByUsername
 }

@@ -56,5 +56,6 @@ async function removeWriterRights(user_id) {
 module.exports = {
     Writer,
     giveWriterRights,
-    removeWriterRights
+    removeWriterRights,
+    isUserWriter
 }
