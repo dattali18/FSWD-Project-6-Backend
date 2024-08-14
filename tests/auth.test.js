@@ -73,7 +73,7 @@ describe('Testing the authentication routes', () => {
 
         const response = await request(app).post('/api/auth/register').send(testUser);
 
-        // expect(response.status).toBe(201);
+        expect(response.status).toBe(201);
 
         // check if the user is created
         const user = await userModel.getUserByUsername(testUser.username);
