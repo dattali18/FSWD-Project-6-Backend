@@ -4,7 +4,13 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
+require('dotenv').config();
+
 const usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
+const articlesRouter = require('./routes/articles');
+const commentsRouter = require('./routes/comments');
+const likesRouter = require('./routes/likes');
 
 const app = express();
 
@@ -22,6 +28,10 @@ const apiRouter = express.Router();
 
 // MARK: middleware
 apiRouter.use("/users", usersRouter);
+apiRouter.use("/auth", authRouter);
+apiRouter.use("/articles", articlesRouter);
+apiRouter.use("/comments", commentsRouter);
+apiRouter.use("/likes", likesRouter);
 
 // MARK: routers
 app.use('/api', apiRouter);

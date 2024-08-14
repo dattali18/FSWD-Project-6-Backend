@@ -12,7 +12,7 @@ require('dotenv').config();
  * @body {string} username
  * @body {string} password
  */
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
     // get the user from the userModel and check the user and password
     const username = req.body.username;
     const password = req.body.password;
@@ -23,13 +23,15 @@ router.post('/login', (req, res) => {
     }
 
     // find the user from the userModel
-    const user = userModel.getUserByUsername(username);
+    const [user] = await userModel.getUserByUsername(username);
     // if the user is not found
     if (!user) {
         return res.status(404).json({message: 'Invalid username or password'});
     }
     // check the password with bycrypt
-    if (!bycrypt.compare(password, user.password)) {
+    const result = bycrypt.compareSync(password, user.password);
+
+    if (!result) {
         return res.status(401).json({message: 'Invalid username or password'});
     }
 
@@ -37,7 +39,7 @@ router.post('/login', (req, res) => {
     const token = jwt.sign({username: user.username, email: user.email}, process.env.TOKEN_SECRET, {expiresIn: '1d'});
 
     // send the token to the user
-    res.status(200).json({token: token, message: "Login successful"});
+    return res.status(200).json({ token: token, message: "Login successful"});
 });
 
 /**
@@ -46,7 +48,7 @@ router.post('/login', (req, res) => {
  * @body {string} email
  * @body {string} password
  */
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
     // get the user from the userModel and check the user and password
     const username = req.body.username;
     const email = req.body.email;
@@ -58,14 +60,14 @@ router.post('/register', (req, res) => {
     }
 
     // check if the user already exists
-    const user = userModel.getUserByUsername(username);
+    const [user] = await userModel.getUserByUsername(username);
     if (user) {
         return res.status(409).json({message: 'User already exists'});
     }
 
     // create the user
     const newUser = new userModel.User(username, email, password);
-    const response = userModel.createUser(newUser);
+    const response = await userModel.createUser(newUser);
 
     // send the response
     res.status(201).json({message: 'User created successfully', data: response});

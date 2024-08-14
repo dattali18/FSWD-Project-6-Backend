@@ -2,7 +2,7 @@
  * @desc This file will contain the connection to the MySQL database
  */
 
-const mysql = require('mysql2/promises');
+const mysql = require('mysql2/promise');
 
 // import the environment variables
 require('dotenv').config();
