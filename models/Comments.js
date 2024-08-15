@@ -41,7 +41,7 @@ async function createComment(article_id, user_id, content) {
  * @param {number} comment_id
  */
 async function removeComment(comment_id) {
-   const [result] =  await connection.execute('DELETE FROM comments WHERE id = ?', [comment_id]);
+    const [result] = await connection.execute('DELETE FROM comments WHERE id = ?', [comment_id]);
     return result;
 }
 
@@ -65,10 +65,45 @@ async function getUserComments(user_id) {
     return rows;
 }
 
+/**
+ * @desc This function gets a comment by id
+ * @param comment_id
+ * @returns {Promise<*>}
+ */
+async function getCommentById(comment_id) {
+    const [rows] = await connection.execute('SELECT * FROM comments WHERE id = ?', [comment_id]);
+    return rows;
+}
+
+/**
+ * @desc This function gets a comment by user_id and article_id
+ * @param user_id
+ * @param article_id
+ * @returns {Promise<*>}
+ */
+async function getCommentByIds(user_id, article_id) {
+    const [rows] = await connection.execute('SELECT * FROM comments WHERE user_id = ? AND article_id = ?', [user_id, article_id]);
+    return rows;
+}
+
+/**
+ * @desc This function updates a comment
+ * @param comment_id
+ * @param content
+ * @returns {Promise<*>}
+ */
+async function updateComment(comment_id, content) {
+    const [result] = await connection.execute('UPDATE comments SET content = ? WHERE id = ?', [content, comment_id]);
+    return result;
+}
+
 module.exports = {
     Comments,
     createComment,
     removeComment,
     getComments,
-    getUserComments
+    getUserComments,
+    getCommentById,
+    getCommentByIds,
+    updateComment
 };
