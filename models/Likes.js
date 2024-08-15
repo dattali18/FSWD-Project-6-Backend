@@ -2,7 +2,7 @@
  * @desc This file contains the schema for the Likes model
  */
 
-const connection = require("database/MySQL/connection");
+const connection = require("../database/MySQL/connection");
 
 /**
  * @desc This class represents the Likes model
@@ -27,7 +27,8 @@ class Like {
  * @param {number} user_id
  */
 async function createLike(article_id, user_id) {
-    const [result] = connection.execute(`INSERT INTO likes (article_id, user_id) VALUES (?, ?)`, [article_id, user_id]);
+    const [result] = connection.execute(`INSERT INTO Likes (article_id, user_id)
+                                         VALUES (?, ?)`, [article_id, user_id]);
     return result;
 }
 
@@ -36,27 +37,33 @@ async function createLike(article_id, user_id) {
  * @param {number} like_id
  */
 async function deleteLike(like_id) {
-    const [result] = connection.execute(`DELETE FROM likes WHERE id = ?`, [like_id]);
+    const [result] = connection.execute(`DELETE
+                                         FROM Likes
+                                         WHERE id = ?`, [like_id]);
     return result;
 }
 
 /**
- * @desc This method gets all likes for a specific article
+ * @desc This method gets all Likes for a specific article
  * @param {number} article_id
  * @returns {Promise<*>}
  */
 async function getLikesByArticle(article_id) {
-    const [result] = connection.execute(`SELECT * FROM likes WHERE article_id = ?`, [article_id]);
+    const [result] = connection.execute(`SELECT *
+                                         FROM Likes
+                                         WHERE article_id = ?`, [article_id]);
     return result;
 }
 
 /**
- * @desc This method gets all likes for a specific user
+ * @desc This method gets all Likes for a specific user
  * @param {number} user_id
  * @returns {Promise<*>}
  */
 async function getLikesByUser(user_id) {
-    const [result] = connection.execute(`SELECT * FROM likes WHERE user_id = ?`, [user_id]);
+    const [result] = connection.execute(`SELECT *
+                                         FROM Likes
+                                         WHERE user_id = ?`, [user_id]);
     return result;
 }
 
