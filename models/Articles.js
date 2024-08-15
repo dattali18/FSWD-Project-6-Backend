@@ -73,19 +73,26 @@ async function deleteArticle(articleId) {
 /**
  * @desc This function will update an article in the database
  * @param articleId : number - the id of the article to update
- * @param article : Article - the new article data
+ * @param {Object} article  - the new article data
  * @returns {Promise<*>}
  */
 async function updateArticle(articleId, article) {
     // when updating an article we need also to update the same article in the MySQL db
     // and update the article in the MongoDB db
 
+    /**
+     * @param {Object} article
+     * @property {string} title
+     * @property {string} content
+     * @property {[string]} tags
+     */
+
     // get the article from the MongoDB db
     const oldArticle = await Articles.findOne({articleId: articleId});
     // update the article in the MySQL db
     await mysqlDB.execute('UPDATE Articles SET title = ? WHERE id = ?', [article.title, articleId]);
     // update the article in the MongoDB db
-    return Articles.updateOne({_id: articleId}, article);
+    return Articles.updateOne({articleId: articleId}, article );
 }
 
 /**

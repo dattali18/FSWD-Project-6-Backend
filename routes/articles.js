@@ -15,7 +15,7 @@ router.get('/:id', async (req, res) => {
     let id = req.params.id;
     // can't access this path why??
     id = parseInt(id);
-    if(isNaN(id)) {
+    if (isNaN(id)) {
         return res.status(400).json({message: "Invalid id"});
     }
 
@@ -95,6 +95,42 @@ router.post('/', isWriter, async (req, res) => {
         return res.status(201).json({article: savedArticle});
     } catch (error) {
         return res.status(400).json({message: error});
+    }
+});
+
+/**
+ * @desc update an article
+ * @path PUT /articles/:id
+ * @access Public
+ * @param {number} id - article id
+ * @param {string} title - article title
+ * @param {string} content - article body
+ * @param {[string]} tags - article tags
+ */
+router.put('/:id', isWriter, async (req, res) => {
+    let id = req.params.id;
+    id = parseInt(id);
+
+    if (isNaN(id)) {
+        return res.status(400).json({message: "Invalid id"});
+    }
+
+    // check if the user is the author of the article
+    const article = await Article.getArticlesById(id);
+    if (article.author !== req.user.id) {
+        return res.status(401).json({message: "Unauthorized"});
+    }
+
+    const articleObject = {
+        title: req.body.title, content: req.body.content, tags: req.body.tags
+    };
+
+    try {
+        const updatedArticle = await Article.updateArticle(id, articleObject);
+        return res.status(200).json({article: updatedArticle});
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({message: "Article not found"});
     }
 });
 
