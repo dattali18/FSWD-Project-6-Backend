@@ -37,21 +37,25 @@ router.post("/", auth, async (req, res) => {
  * @access Private
  * @param {number} id
  */
-router.delete("/", auth, async (req, res) => {
-    const article_id = req.body.article_id;
+router.delete("/:id", auth, async (req, res) => {
+    const id = req.params.id;
     const user_id = req.user.id;
 
-    if (!article_id) {
+    if (!id) {
         return res.status(400).send('Please provide article_id');
     }
 
     try {
-        const [comment] = await commentsModel.getCommentByIds(article_id, user_id);
+        const [comment] = await commentsModel.getCommentById(id);
 
         if (!comment) {
             return res.status(404).send('Comment not found');
         }
 
+        // check if the user is the owner of the comment
+        if (comment.user_id !== user_id) {
+            return res.status(403).send('You are not authorized to delete this comment');
+        }
 
         const result = await commentsModel.removeComment(comment.id);
 
@@ -75,11 +79,19 @@ router.delete("/", auth, async (req, res) => {
  * @body {number} user_id
  */
 router.put("/", auth, async (req, res) => {
-    const {content, article_id} = req.body;
-    const user_id = req.user.id;
+    let {content, article_id} = req.body;
+    let user_id = req.user.id;
 
     if (!content || !article_id) {
         return res.status(400).send('Please provide content and article_id');
+    }
+
+    // parse the article_id, user_id to integer
+    try {
+        article_id = parseInt(article_id);
+        user_id = parseInt(user_id);
+    } catch (error) {
+        return res.status(400).send('Invalid article_id or user_id');
     }
 
     try {
