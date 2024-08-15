@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const auth = require('../middleware/adminMiddleware');
+const auth = require('../middleware/authMiddleware');
 const likeModel = require('../models/Likes');
 
 
@@ -23,7 +23,7 @@ router.post('/', auth, async (req, res) => {
         const result = await likeModel.createLike(article_id, user_id);
         return res.status(201).json(result);
     } catch (error) {
-        console.error(error);
+        console.log(error);
         return res.status(500).send('Server error');
     }
 });

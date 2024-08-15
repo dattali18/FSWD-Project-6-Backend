@@ -27,7 +27,7 @@ class Like {
  * @param {number} user_id
  */
 async function createLike(article_id, user_id) {
-    const [result] = connection.execute(`INSERT INTO Likes (article_id, user_id)
+    const result = connection.execute(`INSERT INTO Likes (article_id, user_id)
                                          VALUES (?, ?)`, [article_id, user_id]);
     return result;
 }
