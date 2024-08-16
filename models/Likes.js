@@ -28,7 +28,7 @@ class Like {
  */
 async function createLike(article_id, user_id) {
     const result = connection.execute(`INSERT INTO Likes (article_id, user_id)
-                                         VALUES (?, ?)`, [article_id, user_id]);
+                                       VALUES (?, ?)`, [article_id, user_id]);
     return result;
 }
 
@@ -67,10 +67,23 @@ async function getLikesByUser(user_id) {
     return result;
 }
 
+/**
+ * @desc This method gets a like by its id
+ * @param like_id
+ * @returns {Promise<*>}
+ */
+async function getLikeById(like_id) {
+    const [result] = connection.execute(`SELECT *
+                                         FROM Likes
+                                         WHERE id = ?`, [like_id]);
+    return result;
+}
+
 module.exports = {
     Like,
     createLike,
     deleteLike,
     getLikesByArticle,
-    getLikesByUser
+    getLikesByUser,
+    getLikeById
 }
