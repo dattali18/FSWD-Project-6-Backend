@@ -96,7 +96,7 @@ router.get("/:id", auth, async (req, res) => {
       username: req.user.username,
       email: req.user.email,
     };
-    return res.status(200).send(user);
+    return res.status(200).json({user});
   } catch (error) {
     console.error("Error in getting user", error);
     return res.status(500).send("Internal Server Error");
@@ -124,7 +124,7 @@ router.get("/username/:username", auth, async (req, res) => {
       username: user.username,
       email: user.email,
     };
-    return res.status(200).send(user);
+    return res.status(200).json({user});
   } catch (error) {
     console.error("Error in getting user", error);
     return res.status(500).send("Internal Server Error");
