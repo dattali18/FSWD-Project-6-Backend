@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const cors = require("cors");
 
 require('dotenv').config();
 
@@ -24,6 +25,8 @@ const commentsRouter = require('./routes/comments');
 const likesRouter = require('./routes/likes');
 
 const app = express();
+// Enable All CORS Requests
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
