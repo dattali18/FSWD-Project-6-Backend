@@ -1,9 +1,8 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const auth = require('../middleware/authMiddleware');
-const likeModel = require('../models/Likes');
-
+const auth = require("../middleware/authMiddleware");
+const likeModel = require("../models/Likes");
 
 /**
  * @desc Create a like
@@ -11,21 +10,26 @@ const likeModel = require('../models/Likes');
  * @access Private
  * @body {number} article_id
  */
-router.post('/', auth, async (req, res) => {
-    const {article_id} = req.body;
-    const user_id = req.user.id;
+router.post("/", auth, async (req, res) => {
+  const article_id = req.body.article_id;
+  const user_id = req.user.id;
 
-    if (!article_id) {
-        return res.status(400).send('Please provide article_id');
-    }
+  if (!article_id) {
+    return res.status(400).send("Please provide article_id");
+  }
 
-    try {
-        const result = await likeModel.createLike(article_id, user_id);
-        return res.status(201).json(result);
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send('Server error');
+  try {
+    // check if the user has already liked the article
+    const hasLiked = await likeModel.hasLiked(article_id, user_id);
+    if (hasLiked) {
+      return res.status(400).send("You have already liked this article");
     }
+    const result = await likeModel.createLike(article_id, user_id);
+    return res.status(201).json(result);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Server error");
+  }
 });
 
 // TEST
@@ -33,35 +37,36 @@ router.post('/', auth, async (req, res) => {
  * @desc Delete a like
  * @route DELETE api/likes
  * @access Private
- * @body {number} like_id
+ * @body {number} article_id
  */
-router.delete('/', auth, async (req, res) => {
-    const {like_id} = req.body;
-    const user_id = req.user.id;
+router.delete("/", auth, async (req, res) => {
+  const article_id = req.query.article_id;
+  const user_id = req.user.id;
 
-    if (!like_id) {
-        return res.status(400).send('Please provide like_id');
+  if (!article_id) {
+    return res.status(400).send("Please provide article_id");
+  }
+
+  // Check if the user is the owner of the like
+  try {
+    const [like] = await likeModel.getLikesByIds(article_id, user_id);
+
+    // if the like does not exist
+    if (!like) {
+      return res.status(400).send("You have not liked this article");
     }
 
-    // Check if the user is the owner of the like
-    try {
-        const like = await likeModel.getLikeById(like_id);
-        if (like.user_id !== user_id) {
-            return res.status(401).send('Unauthorized');
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send('Server error');
-    }
+    const like_id = like.id;
 
-    try {
-        const result = await likeModel.deleteLike(like_id);
-        return res.status(200).json(result);
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send('Server error');
-    }
-})
+    // remove the like
+    const result = await likeModel.deleteLike(like_id);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Server error");
+  }
+});
 
 // TEST
 /**
@@ -70,16 +75,16 @@ router.delete('/', auth, async (req, res) => {
  * @access Public
  * @param {number} article_id
  */
-router.get('/article/:article_id', async (req, res) => {
-    const {article_id} = req.params;
+router.get("/article/:article_id", async (req, res) => {
+  const { article_id } = req.params;
 
-    try {
-        const result = await likeModel.getLikesByArticle(article_id);
-        return res.status(200).json(result);
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send('Server error');
-    }
+  try {
+    const result = await likeModel.getLikesByArticle(article_id);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Server error");
+  }
 });
 
 // TEST
@@ -89,17 +94,41 @@ router.get('/article/:article_id', async (req, res) => {
  * @access Public
  * @param {number} user_id
  */
-router.get('/user/:user_id', async (req, res) => {
-    const {user_id} = req.params;
+router.get("/user/:user_id", async (req, res) => {
+  const { user_id } = req.params;
 
-    try {
-        const result = await likeModel.getLikesByUser(user_id);
-        return res.status(200).json(result);
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send('Server error');
-    }
+  try {
+    const result = await likeModel.getLikesByUser(user_id);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Server error");
+  }
 });
 
+/**
+ * @desc return if the user has liked the article
+ * @route GET api/likes/liked
+ * @access Private
+ * @param {number} article_id
+ */
+router.get("/liked", auth, async (req, res) => {
+  const article_id = req.query.article_id;
+  const user_id = req.user.id;
+
+  if (!article_id) {
+    console.log(JSON.stringify(req.body));
+
+    return res.status(400).send(`Please provide article_id current`);
+  }
+
+  try {
+    const result = await likeModel.hasLiked(article_id, user_id);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Server error");
+  }
+});
 
 module.exports = router;

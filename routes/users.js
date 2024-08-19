@@ -81,22 +81,51 @@ router.put("/:id", auth, async (req, res) => {
  * @route GET /users/:id
  * @access Private
  */
-router.get("/:id", auth, async (req, res) => {
+// router.get("/:id", auth, async (req, res) => {
+//   let id = req.params.id;
+
+//   // checking if the user that want to change is the same as the user that is logged in
+//   if (String(req.user.id) !== id) {
+//     return res.status(403).send("Forbidden access");
+//   }
+
+//   try {
+//     // return the user without the password
+//     const user = {
+//       id: req.user.id,
+//       username: req.user.username,
+//       email: req.user.email,
+//     };
+//     return res.status(200).json({user});
+//   } catch (error) {
+//     console.error("Error in getting user", error);
+//     return res.status(500).send("Internal Server Error");
+//   }
+// });
+
+/**
+ * @desc Get get a user by id
+ * @route GET /users/:id
+ * @access Public
+ * @param {number} id - user id
+ */
+router.get("/:id", async (req, res) => {
   let id = req.params.id;
 
-  // checking if the user that want to change is the same as the user that is logged in
-  if (String(req.user.id) !== id) {
-    return res.status(403).send("Forbidden access");
-  }
-
   try {
+    const [user] = await userModel.getUserById(id);
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
     // return the user without the password
-    const user = {
-      id: req.user.id,
-      username: req.user.username,
-      email: req.user.email,
+    const userResponse = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
     };
-    return res.status(200).json({user});
+    return res.status(200).json({ user: userResponse });
   } catch (error) {
     console.error("Error in getting user", error);
     return res.status(500).send("Internal Server Error");
@@ -124,7 +153,7 @@ router.get("/username/:username", auth, async (req, res) => {
       username: user.username,
       email: user.email,
     };
-    return res.status(200).json({user});
+    return res.status(200).json({ user });
   } catch (error) {
     console.error("Error in getting user", error);
     return res.status(500).send("Internal Server Error");
