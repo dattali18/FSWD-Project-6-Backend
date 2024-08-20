@@ -88,7 +88,12 @@ router.post("/register", async (req, res) => {
  * @desc get user using token
  */
 router.get("/me", auth, async (req, res) => {
-  const user = req.user;
+  const user = {
+    // every property of the user except the password
+    id: req.user.id,
+    username: req.user.username,
+    email: req.user.email,
+  };
   res.status(200).json({ user });
 });
 

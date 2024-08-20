@@ -42,28 +42,11 @@ router.delete("/:id", isAdmin, async (req, res) => {
  * @body {string} user.username
  * @body {string} user.email
  */
-router.put("/:id", auth, async (req, res) => {
-  const id = req.params.id;
-  /**
-   * @type {Object}
-   * @property {string} username
-   * @property {string} email
-   */
-  const userReq = req.body;
-
-  // checking if the user that want to change is the same as the user that is logged in
-  if (req.user.id !== id) {
-    return res.status(403).send("Forbidden access");
-  }
+router.put("/", auth, async (req, res) => {
+  const { username, email } = req.body;
 
   try {
-    const [existingUser] = await userModel.getUserById(id);
-
-    if (!existingUser) {
-      return res.status(404).send("User not found");
-    }
-
-    const result = await userModel.updateUser(id, userReq);
+    const result = await userModel.updateUser(req.user.id, { username, email });
 
     if (result.affectedRows === 1) {
       return res.status(200).send("User updated successfully");
