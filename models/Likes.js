@@ -70,10 +70,14 @@ async function getLikesByArticle(article_id) {
  * @returns {Promise<*>}
  */
 async function getLikesByUser(user_id) {
+  // get all likes for a specific user + the article title, id of the like
   const [result] = await connection.execute(
-    `SELECT *
-                                         FROM Likes
-                                         WHERE user_id = ?`,
+    `
+    SELECT Likes.id, Articles.title, Articles.id AS article_id
+    FROM Likes 
+    JOIN Articles ON Likes.article_id = Articles.id
+    WHERE Likes.user_id = ?
+    `,
     [user_id]
   );
   return result;
@@ -109,7 +113,7 @@ async function hasLiked(article_id, user_id) {
   );
 
   // check if the user has liked the article
-    return result.length > 0;
+  return result.length > 0;
 }
 
 /**
