@@ -40,11 +40,17 @@ router.post("/", auth, async (req, res) => {
  * @body {number} article_id
  */
 router.delete("/", auth, async (req, res) => {
-  const article_id = req.query.article_id;
+  let article_id = req.query.article_id;
   const user_id = req.user.id;
 
   if (!article_id) {
     return res.status(400).send("Please provide article_id");
+  }
+
+  article_id = parseInt(article_id);
+  // Check if article_id is a number
+  if (isNaN(article_id)) {
+    return res.status(400).send("Invalid article_id");
   }
 
   // Check if the user is the owner of the like
@@ -76,7 +82,12 @@ router.delete("/", auth, async (req, res) => {
  * @param {number} article_id
  */
 router.get("/article/:article_id", async (req, res) => {
-  const { article_id } = req.params;
+  let { article_id } = req.params;
+
+  article_id = parseInt(article_id);
+  if (isNaN(article_id)) {
+    return res.status(400).send("Invalid article_id");
+  }
 
   try {
     const result = await likeModel.getLikesByArticle(article_id);
@@ -95,7 +106,12 @@ router.get("/article/:article_id", async (req, res) => {
  * @param {number} user_id
  */
 router.get("/user/:user_id", async (req, res) => {
-  const { user_id } = req.params;
+  let { user_id } = req.params;
+
+  user_id = parseInt(user_id);
+  if (isNaN(user_id)) {
+    return res.status(400).send("Invalid user_id");
+  }
 
   try {
     const result = await likeModel.getLikesByUser(user_id);

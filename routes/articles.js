@@ -147,6 +147,11 @@ router.put("/:id", isWriter, async (req, res) => {
  */
 router.get("/user/:id", async (req, res) => {
   let id = req.params.id;
+  // check if id is a number
+  id = parseInt(id);
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "Invalid id" });
+  }
   try {
     const articles = await Article.getArticlesByAuthor(id);
     return res.status(200).json({ articles: articles });
