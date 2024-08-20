@@ -139,4 +139,21 @@ router.put("/:id", isWriter, async (req, res) => {
   }
 });
 
+/**
+ * @desc get all the articles by a user
+ * @path GET /articles/user/:id
+ * @access Public
+ * @param {number} id - user id
+ */
+router.get("/user/:id", async (req, res) => {
+  let id = req.params.id;
+  try {
+    const articles = await Article.getArticlesByAuthor(id);
+    return res.status(200).json({ articles: articles });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "No articles found" });
+  }
+});
+
 module.exports = router;

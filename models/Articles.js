@@ -3,12 +3,12 @@
  * all the function will be async
  */
 
-const mongoose = require('mongoose');
-const Articles = require('../database/MongoDB/ArticlesSchema');
+const mongoose = require("mongoose");
+const Articles = require("../database/MongoDB/ArticlesSchema");
 
 // import the connection to the database
-const mysqlDB = require('../database/MySQL/connection');
-const {connection} = require("mongoose");
+const mysqlDB = require("../database/MySQL/connection");
+const { connection } = require("mongoose");
 
 /**
  * @desc Article - class that will represent the article object
@@ -19,19 +19,19 @@ const {connection} = require("mongoose");
  * @property articleId : number
  */
 class Article {
-    /**
-     * @desc constructor for the article
-     * @param title : string
-     * @param author : number
-     * @param tags : [string]
-     * @param content : string
-     */
-    constructor(title, author, tags, content) {
-        this.title = title;
-        this.author = author;
-        this.content = content;
-        this.tags = tags;
-    }
+  /**
+   * @desc constructor for the article
+   * @param title : string
+   * @param author : number
+   * @param tags : [string]
+   * @param content : string
+   */
+  constructor(title, author, tags, content) {
+    this.title = title;
+    this.author = author;
+    this.content = content;
+    this.tags = tags;
+  }
 }
 
 /**
@@ -40,17 +40,20 @@ class Article {
  * @returns {Promise<*>}
  */
 async function createArticle(article) {
-    // when creating a new article we need also to add the same article in the MySQL db
-    // and store the _id of the article in the MySQL db in the article in the MongoDB db
+  // when creating a new article we need also to add the same article in the MySQL db
+  // and store the _id of the article in the MySQL db in the article in the MongoDB db
 
-    // create the article in the MySQL db
-    const [result] = await mysqlDB.execute('INSERT INTO Articles (title, user_id) VALUES (?, ?)', [article.title, article.author]);
-    // add the id of the article in the MySQL db to the article in the MongoDB db
-    article.articleId = result.insertId;
+  // create the article in the MySQL db
+  const [result] = await mysqlDB.execute(
+    "INSERT INTO Articles (title, user_id) VALUES (?, ?)",
+    [article.title, article.author]
+  );
+  // add the id of the article in the MySQL db to the article in the MongoDB db
+  article.articleId = result.insertId;
 
-    // create the article in the MongoDB db
-    const newArticle = new Articles(article);
-    return newArticle.save();
+  // create the article in the MongoDB db
+  const newArticle = new Articles(article);
+  return newArticle.save();
 }
 
 /**
@@ -59,15 +62,15 @@ async function createArticle(article) {
  * @returns {Promise<*>}
  */
 async function deleteArticle(articleId) {
-    // when deleting an article we need also to delete the same article in the MySQL db
-    // and delete the article in the MongoDB db
+  // when deleting an article we need also to delete the same article in the MySQL db
+  // and delete the article in the MongoDB db
 
-    // get the article from the MongoDB db
-    const article = await Articles.findOne({articleId: articleId});
-    // delete the article from the MySQL db
-    await mysqlDB.execute('DELETE FROM Articles WHERE id = ?', [articleId]);
-    // delete the article from the MongoDB db
-    return Articles.deleteOne({_id: articleId});
+  // get the article from the MongoDB db
+  const article = await Articles.findOne({ articleId: articleId });
+  // delete the article from the MySQL db
+  await mysqlDB.execute("DELETE FROM Articles WHERE id = ?", [articleId]);
+  // delete the article from the MongoDB db
+  return Articles.deleteOne({ _id: articleId });
 }
 
 /**
@@ -77,22 +80,25 @@ async function deleteArticle(articleId) {
  * @returns {Promise<*>}
  */
 async function updateArticle(articleId, article) {
-    // when updating an article we need also to update the same article in the MySQL db
-    // and update the article in the MongoDB db
+  // when updating an article we need also to update the same article in the MySQL db
+  // and update the article in the MongoDB db
 
-    /**
-     * @param {Object} article
-     * @property {string} title
-     * @property {string} content
-     * @property {[string]} tags
-     */
+  /**
+   * @param {Object} article
+   * @property {string} title
+   * @property {string} content
+   * @property {[string]} tags
+   */
 
-    // get the article from the MongoDB db
-    const oldArticle = await Articles.findOne({articleId: articleId});
-    // update the article in the MySQL db
-    await mysqlDB.execute('UPDATE Articles SET title = ? WHERE id = ?', [article.title, articleId]);
-    // update the article in the MongoDB db
-    return Articles.updateOne({articleId: articleId}, article );
+  // get the article from the MongoDB db
+  const oldArticle = await Articles.findOne({ articleId: articleId });
+  // update the article in the MySQL db
+  await mysqlDB.execute("UPDATE Articles SET title = ? WHERE id = ?", [
+    article.title,
+    articleId,
+  ]);
+  // update the article in the MongoDB db
+  return Articles.updateOne({ articleId: articleId }, article);
 }
 
 /**
@@ -100,8 +106,8 @@ async function updateArticle(articleId, article) {
  * @returns {Promise<*>}
  */
 async function getArticles() {
-    // get all the articles
-    return Articles.find();
+  // get all the articles
+  return Articles.find();
 }
 
 /**
@@ -110,16 +116,22 @@ async function getArticles() {
  * @returns {Promise<*>}
  */
 async function getArticlesById(articleId) {
-    // get all the articles
-    return Articles.findOne({articleId: articleId});
+  // get all the articles
+  return Articles.findOne({ articleId: articleId });
 }
 
+async function getArticlesByAuthor(authorId) {
+  // get all the articles
+  // send all the property except the content
+  return Articles.find({ author: authorId }, { content: 0 });
+}
 
 module.exports = {
-    Article,
-    createArticle,
-    deleteArticle,
-    updateArticle,
-    getArticles,
-    getArticlesById
-}
+  Article,
+  createArticle,
+  deleteArticle,
+  updateArticle,
+  getArticles,
+  getArticlesById,
+  getArticlesByAuthor,
+};
