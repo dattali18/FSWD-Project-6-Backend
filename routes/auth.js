@@ -93,6 +93,7 @@ router.get("/me", auth, async (req, res) => {
     id: req.user.id,
     username: req.user.username,
     email: req.user.email,
+    role: req.user.role,
   };
   res.status(200).json({ user });
 });
