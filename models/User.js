@@ -2,8 +2,8 @@
  * @desc User model - will contain all the user related functions
  */
 
-const connection = require('../database/MySQL/connection');
-const bcrypt = require('bcrypt');
+const connection = require("../database/MySQL/connection");
+const bcrypt = require("bcrypt");
 
 /**
  * @desc User - class that will represent the user object
@@ -12,17 +12,17 @@ const bcrypt = require('bcrypt');
  * @property password : string
  */
 class User {
-    /**
-     * @desc constructor for the user
-     * @param username : string
-     * @param email : string
-     * @param password : string
-     */
-    constructor(username, email, password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
+  /**
+   * @desc constructor for the user
+   * @param username : string
+   * @param email : string
+   * @param password : string
+   */
+  constructor(username, email, password) {
+    this.username = username;
+    this.email = email;
+    this.password = password;
+  }
 }
 
 /**
@@ -30,13 +30,13 @@ class User {
  * @returns {Promise<*[]>}
  */
 async function getAllUsers() {
-    try {
-        const [rows] = await connection.execute('SELECT * FROM Users');
-        return rows;
-    } catch (error) {
-        console.error('Error in getting all users', error);
-        return [];
-    }
+  try {
+    const [rows] = await connection.execute("SELECT * FROM Users");
+    return rows;
+  } catch (error) {
+    console.error("Error in getting all users", error);
+    return [];
+  }
 }
 
 /**
@@ -45,15 +45,18 @@ async function getAllUsers() {
  * @returns {Promise<*>}
  */
 async function createUser(user) {
-    try {
-        // before inserting the password we will encrypt it
-        user.password = await bcrypt.hash(user.password, 10);
-        const [rows] = await connection.execute('INSERT INTO Users (username, email, password) VALUES (?, ?, ?)', [user.username, user.email, user.password]);
-        return rows;
-    } catch (error) {
-        console.error('Error in creating user', error);
-        return [];
-    }
+  try {
+    // before inserting the password we will encrypt it
+    user.password = await bcrypt.hash(user.password, 10);
+    const [rows] = await connection.execute(
+      "INSERT INTO Users (username, email, password) VALUES (?, ?, ?)",
+      [user.username, user.email, user.password]
+    );
+    return rows;
+  } catch (error) {
+    console.error("Error in creating user", error);
+    return [];
+  }
 }
 
 /**
@@ -62,13 +65,15 @@ async function createUser(user) {
  * @returns {Promise<*|*[]>}
  */
 async function deleteUser(user_id) {
-    try {
-        const [rows] = await connection.execute('DELETE FROM Users WHERE id = ?', [user_id]);
-        return rows;
-    } catch (error) {
-        console.error('Error in deleting user', error);
-        return [];
-    }
+  try {
+    const [rows] = await connection.execute("DELETE FROM Users WHERE id = ?", [
+      user_id,
+    ]);
+    return rows;
+  } catch (error) {
+    console.error("Error in deleting user", error);
+    return [];
+  }
 }
 
 /**
@@ -76,13 +81,16 @@ async function deleteUser(user_id) {
  * @param {string} username
  */
 async function getUserByUsername(username) {
-    try {
-        const [rows] = await connection.execute('SELECT * FROM Users WHERE username = ?', [username]);
-        return rows;
-    } catch (error) {
-        console.error('Error in getting user by username', error);
-        return [];
-    }
+  try {
+    const [rows] = await connection.execute(
+      "SELECT * FROM Users WHERE username = ?",
+      [username]
+    );
+    return rows;
+  } catch (error) {
+    console.error("Error in getting user by username", error);
+    return [];
+  }
 }
 
 /**
@@ -91,13 +99,16 @@ async function getUserByUsername(username) {
  * @returns {Promise<*>}
  */
 async function getUserById(id) {
-    try {
-        const [rows] = await connection.execute('SELECT * FROM Users WHERE id = ?', [id]);
-        return rows;
-    } catch (error) {
-        console.error('Error in getting user by id', error);
-        return [];
-    }
+  try {
+    const [rows] = await connection.execute(
+      "SELECT * FROM Users WHERE id = ?",
+      [id]
+    );
+    return rows;
+  } catch (error) {
+    console.error("Error in getting user by id", error);
+    return [];
+  }
 }
 
 /**
@@ -108,22 +119,25 @@ async function getUserById(id) {
  *
  * @Note we **can't** update the password here
  */
-async function updateUser(id, user) {
-    try {
-        const [rows] = await connection.execute('UPDATE Users SET username = ?, email = ? WHERE id = ?', [user.username, user.email, id]);
-        return rows;
-    } catch (error) {
-        console.error('Error in updating user', error);
-        return [];
-    }
+async function updateUser(id, email) {
+  try {
+    const [rows] = await connection.execute(
+      "UPDATE Users SET email = ? WHERE id = ?",
+      [email, id]
+    );
+    return rows;
+  } catch (error) {
+    console.error("Error in updating user", error);
+    return [];
+  }
 }
 
 module.exports = {
-    User,
-    getAllUsers,
-    getUserById,
-    createUser,
-    deleteUser,
-    getUserByUsername,
-    updateUser
-}
+  User,
+  getAllUsers,
+  getUserById,
+  createUser,
+  deleteUser,
+  getUserByUsername,
+  updateUser,
+};
