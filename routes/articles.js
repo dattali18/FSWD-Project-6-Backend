@@ -161,4 +161,30 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
+/**
+ * @desc delete an article
+ * @path DELETE /articles/:id
+ * @access Private
+ */
+router.delete("/:id", isWriter, async (req, res) => {
+  let id = req.params.id;
+  id = parseInt(id);
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "Invalid id" });
+  }
+
+  const article = await Article.getArticlesById(id);
+  if (article.author !== req.user.id) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    await Article.deleteArticle(id);
+    return res.status(200).json({ message: "Article deleted" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Article not found" });
+  }
+});
+
 module.exports = router;

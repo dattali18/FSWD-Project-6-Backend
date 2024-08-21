@@ -53,7 +53,9 @@ async function createArticle(article) {
 
   // create the article in the MongoDB db
   const newArticle = new Articles(article);
-  return newArticle.save();
+  await newArticle.save();
+
+  return result;
 }
 
 /**
