@@ -32,8 +32,20 @@ class Comments {
  * @returns {Promise<*>}
  */
 async function createComment(article_id, user_id, content) {
-    const [rows] = await connection.execute('INSERT INTO Comments (article_id, user_id, content) VALUES (?, ?, ?)', [article_id, user_id, content]);
-    return rows;
+    // Perform the insert operation
+    const [result] = await connection.execute(
+        'INSERT INTO Comments (article_id, user_id, content) VALUES (?, ?, ?)',
+        [article_id, user_id, content]
+    );
+
+    // Use the insertId to fetch the newly inserted comment
+    const [rows] = await connection.execute(
+        'SELECT * FROM Comments WHERE id = ?',
+        [result.insertId]
+    );
+
+    // Return the inserted comment (assuming rows is an array)
+    return rows[0];  // Return the first row which contains the newly inserted comment
 }
 
 /**
@@ -93,8 +105,17 @@ async function getCommentByIds(user_id, article_id) {
  * @returns {Promise<*>}
  */
 async function updateComment(comment_id, content) {
-    const [result] = await connection.execute('UPDATE Comments SET content = ? WHERE id = ?', [content, comment_id]);
-    return result;
+    // Perform the update operation
+    await connection.execute('UPDATE Comments SET content = ? WHERE id = ?', [content, comment_id]);
+
+    // Fetch the updates comment
+    const [rows] = await connection.execute(
+        'SELECT * FROM Comments WHERE id = ?',
+        [comment_id]
+    );
+
+    // Return the updates comment (assuming rows is an array)
+    return rows[0];
 }
 
 module.exports = {
