@@ -67,12 +67,10 @@ async function deleteArticle(articleId) {
   // when deleting an article we need also to delete the same article in the MySQL db
   // and delete the article in the MongoDB db
 
-  // get the article from the MongoDB db
-  const article = await Articles.findOne({ articleId: articleId });
   // delete the article from the MySQL db
   await mysqlDB.execute("DELETE FROM Articles WHERE id = ?", [articleId]);
   // delete the article from the MongoDB db
-  return Articles.deleteOne({ _id: articleId });
+  return Articles.deleteOne({ articleId: articleId });
 }
 
 /**
