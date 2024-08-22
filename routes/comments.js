@@ -95,8 +95,6 @@ router.put("/", auth, async (req, res) => {
   let { comment_id, content } = req.body;
   let user_id = req.user.id;
 
-  console.log("*******************************");
-
   if (!content || !comment_id) {
     return res.status(400).send("Please provide content and comment_id");
   }
