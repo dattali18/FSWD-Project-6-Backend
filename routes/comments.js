@@ -44,7 +44,7 @@ router.post("/", auth, async (req, res) => {
 router.delete("/:id", auth, async (req, res) => {
   let id = req.params.id;
   const user_id = req.user.id;
-  console.log(id)
+  console.log(id);
 
   if (!id) {
     return res.status(400).send("Please provide article_id");
@@ -92,8 +92,10 @@ router.delete("/:id", auth, async (req, res) => {
  * @body {number} user_id
  */
 router.put("/", auth, async (req, res) => {
-  let { commentId: comment_id, content } = req.body;
+  let { comment_id, content } = req.body;
   let user_id = req.user.id;
+
+  console.log("*******************************");
 
   if (!content || !comment_id) {
     return res.status(400).send("Please provide content and comment_id");
@@ -108,9 +110,11 @@ router.put("/", auth, async (req, res) => {
   }
 
   try {
-    const updatedComment = await commentsModel.updateComment(comment_id, content);
+    const updatedComment = await commentsModel.updateComment(
+      comment_id,
+      content
+    );
     return res.status(201).json({ comment: updatedComment });
-
   } catch (error) {
     console.error("Error in updating comment", error);
     return res.status(500).send("Internal Server Error");

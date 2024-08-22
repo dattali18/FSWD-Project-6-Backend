@@ -69,7 +69,7 @@ async function getComments(article_id) {
   // get the commnets for a specific article
   // get the username form the user table
   const [rows] = await connection.execute(
-    "SELECT Comments.id, Comments.content, Comments.created_at, Users.username FROM Comments INNER JOIN Users ON Comments.user_id = Users.id WHERE Comments.article_id = ?",
+    "SELECT Comments.id, Comments.content, Comments.created_at, Comments.user_id, Users.username FROM Comments INNER JOIN Users ON Comments.user_id = Users.id WHERE Comments.article_id = ?",
     [article_id]
   );
   return rows;
