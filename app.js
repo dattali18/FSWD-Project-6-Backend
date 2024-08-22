@@ -23,6 +23,7 @@ const authRouter = require('./routes/auth');
 const articlesRouter = require('./routes/articles');
 const commentsRouter = require('./routes/comments');
 const likesRouter = require('./routes/likes');
+const adminRouter = require('./routes/admin');
 
 const app = express();
 // Enable All CORS Requests
@@ -46,6 +47,7 @@ apiRouter.use("/auth", authRouter);
 apiRouter.use("/articles", articlesRouter);
 apiRouter.use("/comments", commentsRouter);
 apiRouter.use("/likes", likesRouter);
+apiRouter.use("/admin", adminRouter);
 
 // MARK: routers
 app.use('/api', apiRouter);
