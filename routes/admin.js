@@ -32,4 +32,41 @@ router.get("/users", isAdmin, async (req, res) => {
   }
 });
 
+router.get("/users/:id", isAdmin, async (req, res) => {
+  console.log("Inside get user by id");
+  try {
+    const [user] = await User.getUserById(req.params.id);
+    return res.status(200).json(user);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error in getting user by id", error });
+  }
+});
+
+/**
+ * @route POST /admin/users/:id
+ * @desc Update user role by id
+ * @body { role: "admin" }
+ */
+router.post("/users/:id", isAdmin, async (req, res) => {
+    const id = req.params.id;
+    const role = req.body.role;
+
+    // check if role is valid
+    if (!["admin", "user" , "writer"].includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+
+  try {
+    const user = await User.updateUserPrivileges(id, role);
+    return res.status(200).json(user);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error in updating user role", error });
+  }
+});
+
 exports = module.exports = router;

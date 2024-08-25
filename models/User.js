@@ -132,6 +132,45 @@ async function updateUser(id, email) {
   }
 }
 
+/**
+ * @desc Update the user privileges
+ * @param {number} id
+ * @param {"admin" | "user" | "writer"} role
+ */
+async function updateUserPrivileges(id, role) {
+  try {
+    const [rows] = await connection.execute(
+      "UPDATE Users SET role = ? WHERE id = ?",
+      [role, id]
+    );
+
+    // update the admin and writer tables
+    if (role === "admin") {
+      await connection.execute("INSERT INTO Admins (user_id) VALUES (?)", [id]);
+    } else {
+      await connection.execute("DELETE FROM Admins WHERE user_id = ?", [id]);
+    }
+
+    if (role === "writer") {
+      await connection.execute("INSERT INTO Writers (user_id) VALUES (?)", [
+        id,
+      ]);
+    } else {
+      await connection.execute("DELETE FROM Writers WHERE user_id = ?", [id]);
+    }
+
+    if (role === "user") {
+      await connection.execute("DELETE FROM Admins WHERE user_id = ?", [id]);
+      await connection.execute("DELETE FROM Writers WHERE user_id = ?", [id]);
+    }
+
+    return rows;
+  } catch (error) {
+    console.error("Error in updating user role", error);
+    return [];
+  }
+}
+
 module.exports = {
   User,
   getAllUsers,
@@ -140,4 +179,5 @@ module.exports = {
   deleteUser,
   getUserByUsername,
   updateUser,
+  updateUserPrivileges,
 };
