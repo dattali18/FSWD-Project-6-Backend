@@ -132,11 +132,7 @@ router.get("/liked", auth, async (req, res) => {
   const article_id = req.query.article_id;
   const user_id = req.user.id;
 
-  // console.log("article_id", article_id, "user_id", user_id);
-
   if (!article_id) {
-    console.log(JSON.stringify(req.body));
-
     return res.status(400).send(`Please provide article_id current`);
   }
 
