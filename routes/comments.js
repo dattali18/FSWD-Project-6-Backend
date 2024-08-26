@@ -44,7 +44,6 @@ router.post("/", auth, async (req, res) => {
 router.delete("/:id", auth, async (req, res) => {
   let id = req.params.id;
   const user_id = req.user.id;
-  console.log(id);
 
   if (!id) {
     return res.status(400).send("Please provide article_id");
