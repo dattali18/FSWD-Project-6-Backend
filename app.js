@@ -10,9 +10,6 @@ require('dotenv').config();
 // connect to the MongoDB database
 const connect = require('./database/MongoDB/connection');
 connect()
-    .then(() => {
-        console.log("MongoDB connected");
-    })
     .catch(error => {
         console.error("MongoDB connection error:", error);
         process.exit(1);
