@@ -22,10 +22,9 @@ const isAdmin = async (req, res, next) => {
     // verify the token
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-        // console.log('verified:', verified);
         // get the user with username from the db
         const [user] = await userModel.getUserByUsername(verified.username);
-        // console.log('user:', user);
+
         const isAdmin = await adminModel.isUserAdmin(user.id);
         if (user.role !== 'admin' || !isAdmin) {
             return res.status(403).json({message: 'Access denied'});
