@@ -18,6 +18,8 @@ connect()
         process.exit(1);
     });
 
+
+// MARK: routers
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const articlesRouter = require('./routes/articles');
@@ -49,7 +51,7 @@ apiRouter.use("/comments", commentsRouter);
 apiRouter.use("/likes", likesRouter);
 apiRouter.use("/admin", adminRouter);
 
-// MARK: routers
+
 app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler
