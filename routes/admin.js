@@ -32,6 +32,9 @@ router.get("/users", isAdmin, async (req, res) => {
   }
 });
 
+/**
+ * @route GET /admin/users/:id
+ */
 router.get("/users/:id", isAdmin, async (req, res) => {
   console.log("Inside get user by id");
   try {

@@ -86,6 +86,7 @@ router.post("/register", async (req, res) => {
 
 /**
  * @desc get user using token
+ * @route GET /auth/me
  */
 router.get("/me", auth, async (req, res) => {
   const user = {
